@@ -23,12 +23,28 @@ public:
     }
 };
 
-int main(){
-    Person p1(3,4);
-    Person p2(5,6);
-    Person p3 = Person(1,2);
+void test01(){
+    Person p1(1,2);
+    Person p2(1,2);
+    Person p3 = Person(3,4);
 
-    p1 = p2 = p3;
-    cout<<p1.m_a<<p1.m_b;
+    if(p1 == p2){
+        cout<<"good!"<<endl;
+    }
+    bool flag = p1 == p3;
+    if(!flag){
+        cout<<"good"<<endl;
+    }
+}
+
+int main(){
+    // Person p1(3,4);
+    // Person p2(5,6);
+    // Person p3 = Person(1,2);
+
+    // p1 = p2 = p3;
+    // cout<<p1.m_a<<p1.m_b;
+
+    test01();
 
 }
