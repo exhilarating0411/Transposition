@@ -20,8 +20,8 @@ using namespace std;
 
 //一般有了函数模板就不会写一个普通的了
 
-template <typename T>
-T getAdd(T a, T b) {
+template <typename T1, typename T2>
+T1 getAdd(T1 a, T1 b) {
     cout<<"template"<<'\t';
     return a+b;
 }
@@ -36,7 +36,7 @@ void test02(){
     double c = 4.0, d = 5.0;
     char e = 'a';
     cout<<getAdd(c,e)<<endl;//1.1
-    cout<<getAdd<int>(c,e);
+    cout<<getAdd<int,int>(c,e);
     // cout<<getAdd<>(c,e)<<endl;报错
 
 
@@ -50,7 +50,7 @@ void swap1(T a, T b){
     b = temp;
 }
 
-template<typename T>
+template<typename T = int>
 void func(){
     cout<<"hhh"<<endl;
 }
@@ -62,12 +62,12 @@ void test01(){
     char d = 'c';
     double e = 5.0;
     swap1<double>(c,e);
-    swap1<int>(a,d);
+    swap1<int>(a,e);
     // swap1(a,d);
 
     //此时必须确定模板的数据类型
     //func();
-    func<int>();
+    func();
 }
 
 int main(){

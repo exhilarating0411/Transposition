@@ -3,51 +3,92 @@ import xlrd
 import openpyxl
 import numpy as np
 
-origin_list = [0.0979,0.0981,0.0937,0.1111,0.3613,0.1234,0.1064,0.1133,0.1028,0.4222,0.398,0.154\
-,0.1292,0.1601,0.1505,0.1771,0.5589,0.19,0.3863,0.4156,0.4467,0.2076,0.4283,0.2677\
-,0.1533,0.1206,0.1643,0.1449,0.6063,0.1527,0.1265,0.6844,0.1856,0.209,0.2184,0.2797\
-,0.4113,0.1744,0.6115,0.199,0.1992,0.1616,0.1803,0.1769,0.5697,0.1937,0.157,0.5558\
-,0.1302,0.1755,0.1628,0.1326,0.1406,0.1352,0.113,0.1132,0.1841,0.1467,0.1447,0.2954\
-,0.1506,0.1926,0.1481,0.5185,0.2137,0.1544,0.1423,0.1494,0.2039,0.3855,0.258,0.1779\
-,0.1129,0.1359,0.1542,0.1348,0.518,0.1442,0.0974,0.1108,0.1257,0.3784,0.1783,0.1841\
-,0.3895,0.6134,0.161,0.1483,0.515,0.181,0.1479,0.1296,0.1771,0.2064,0.1583,0.1109]
-sampleDict = dict(zip(origin_list,range(1,len(origin_list)+1)))
+origin_list = [0.7525,0.3505,0.3161,0.325,0.2779,0.3011,0.3197,0.2645,0.4398,0.2736,0.2048,0.2817\
+,0.3037,0.3141,0.3519,0.3769,0.3265,1.0202,0.306,0.2569,0.2439,0.2863,0.2287,0.1716\
+,0.3362,0.3611,0.3466,1.0457,0.9707,1.0091,0.8536,0.963,0.3258,0.2921,0.2982,0.6359\
+,0.3612,0.4224,0.3816,1.0114,1.0122,1.0518,1.0112,1.035,0.965,0.3688,0.333,0.5294\
+,0.393,0.4539,1.045,0.986,1.0487,1.0112,1.0456,1.0473,1.0146,1.0108,0.4997,0.709\
+,0.6247,0.4552,0.5618,0.9474,1.0354,1.0489,1.0715,1.0822,1.0317,0.4917,0.3417,1.2095\
+,0.6468,0.3759,0.4164,0.4438,0.595,1.0438,0.6449,1.0679,0.5874,0.4416,0.5767,1.0206\
+,0.7683,0.803,0.8024,0.6408,0.7188,0.8813,1.0662,1.1104,0.9359,0.8247,0.929,1.3497]
+ori_sampleDict = dict(zip(origin_list,range(1,len(origin_list)+1)))
 sort_ori_list = sorted(origin_list)
 
 effect_list = [1-x/max(origin_list) for x in origin_list]
+eff_sampleDict = dict(zip(effect_list,range(1,len(effect_list)+1)))
 sort_eff_list = sorted(effect_list)
 
-def drawPics(ori,sort_ori):
+#原始点图+sorted点图
+def drawPics(ori,sort_ori,sampleDict,ori_or_eff):
     good_with_value = list()
-    sort_good_list = sort_ori[-10:]
+    if ori_or_eff == 1:
+        sort_good_list = sort_ori[:11]
+    else:
+        sort_good_list = sort_ori[-10:]
     for elem in sort_good_list:
         good_with_value.append(sampleDict[elem])
-    #原始点图+sorted点图
-    plt.figure(figsize=(6,6))
+    #判断图类型
+    if ori_or_eff == 1:
+        YLIM = 0.8
+        DISTC = 9
+        YLABEL = '$OD_{600}$'
+        FILL_X1 = 0.6
+        FILL_X2 = len(sort_good_list)+0.4
+        PLOT_X1 = 1
+        PLOT_X2 = len(sort_good_list)+1
+        
+    else:
+        YLIM = 1.0
+        DISTC = 11
+        YLABEL = 'Effect'
+        
+        FILL_X1 = len(ori)-9.5
+        FILL_X2 = len(ori)+2
+        PLOT_X1 = len(sort_ori)-len(sort_good_list)+1
+        PLOT_X2 = len(sort_ori)+1
+
+    plt.figure(figsize=(6,8))
 
     plt.figure(1)
+    #picture 1
     ax1 = plt.subplot(211)
-    plt.scatter(range(1,len(ori)+1),ori,10, color = 'red')
-    plt.scatter(good_with_value,sort_good_list,20,color = 'blue')
+    plt.scatter(range(1,len(ori)+1),ori,10, color = 'tomato')
+    plt.scatter(good_with_value,sort_good_list,20,color = 'crimson')
+    #共同特征
     plt.xlim((0,100))
-    plt.ylim((0,0.8))
+    plt.ylim((0,YLIM))
     x_ticks = np.linspace(0, 100, 11)
     plt.xticks(x_ticks)
-    x1 = range(1,101)
-    y1 = sort_good_list[0]-0.05
-    plt.fill_between(x1,y1,y2 = 0.8,facecolor='purple',alpha = 0.3)
-    aver_ori_list = [sum(ori)/len(ori)]*100
-    plt.plot(range(1,len(aver_ori_list)+1),aver_ori_list,'--')
-    
+    y_ticks = np.linspace(0, YLIM,DISTC)
+    plt.yticks(y_ticks)
+    ax1.set_ylabel(YLABEL,fontsize=10)
+    ax1.set_xlabel("Sequence No.",fontsize=10)
+
+    x1 = range(-1,101)
+    y1 = sort_good_list[0]-0.02
+    plt.fill_between(x1,y1,y2 = sort_good_list[-1]+0.02,facecolor='c',alpha = 0.3)
+
+    aver_ori_list = [sum(ori)/len(ori)]*105
+    plt.plot(range(-1,len(aver_ori_list)-1),aver_ori_list,'--')
+    #picture 2
     ax2 = plt.subplot(212)
+    #共同特征
     plt.xlim((0,100))
-    plt.ylim((0,1))
+    plt.ylim((0,YLIM))
     x_ticks = np.linspace(0, 100, 11)
     plt.xticks(x_ticks)
-    plt.scatter(range(1,len(sort_ori)+1),sort_ori,10,color='red')    
-    plt.scatter(range(len(sort_ori)-len(sort_good_list)+1,len(sort_ori)+1),sort_good_list,10,color='blue')
-    x2 = range(len(ori)-10,len(ori)+2)
-    plt.fill_between(x2,1,facecolor='purple',alpha = 0.3)
+    y_ticks = np.linspace(0, YLIM,DISTC)
+    plt.yticks(y_ticks)
+    ax2.set_ylabel(YLABEL,fontsize=10)
+    ax2.set_xlabel("Sequence No.",fontsize=10)
+
+    plt.plot(range(1,len(sort_ori)+1),sort_ori, color='tomato', marker='o',linewidth=1, \
+        markersize=2)
+    # plt.scatter(range(1,len(sort_ori)+1),sort_ori,10,marker = '+',color='tomato',)    
+    plt.plot(range(PLOT_X1,PLOT_X2),sort_good_list,marker = 'o',color='crimson',\
+        linewidth=1,markersize=2)
+    x2 = np.linspace(FILL_X1,FILL_X2)
+    plt.fill_between(x2,1,facecolor='c',alpha = 0.3)
     plt.show()
 
 def print_data_to_excel(ori,sort_ori,eff_ori,name):
@@ -74,5 +115,5 @@ def print_data_to_excel(ori,sort_ori,eff_ori,name):
 source_path = 'E:/VSCode/code/bp3/'
 if __name__ == "__main__":
     # print_data_to_excel(origin_list,sort_ori_list,sort_eff_list,'test.xlsx')
-    drawPics(origin_list,sort_ori_list)
-    #drawPics(effect_list,sort_eff_list)
+    drawPics(origin_list,sort_ori_list,ori_sampleDict,1)
+    drawPics(effect_list,sort_eff_list,eff_sampleDict,-1)
